@@ -1,0 +1,41 @@
+.mainBlock{
+border-style: dotted;
+}
+
+.grid-container{
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Two equal columns */
+}
+
+.smallerGrid{
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+}
+
+.smallerGrid div {
+  background-color: #f1f1f1;
+  border: 1px solid black;
+  padding: 10px;
+  font-size: 10px;
+  text-align: center;
+}
+
+.resources{
+    border-style: dotted;
+    aspect-ratio : 1 / 1 ;
+}
+
+body {
+    background-color: #e0e0e0;
+    font-family: 'Courier New', Courier, monospace;
+}
+h2 {
+    color: #09912b;
+    text-align: left;
+}
+p {
+    font-size: 16px;
+    color:  #0a0a0a;
+}
+
+

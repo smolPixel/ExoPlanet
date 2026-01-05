@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="main.css">
+    <title>Exo Planet</title>
+
+</head>
+<body>
+<div id = "meta">
+    <button type="button" onclick="SaveGame()">Save</button> <button type="button" onclick="LoadGame()">Load</button>
+</div>
+<div class = "grid-container">
+
+    <div id = "resouces" class = "mainBlock">
+    <h1>Ressources</h1>
+     <div>
+         Iron Mines (C: 5 IP ; 20 S ; 20 II ; 5 W) : <a id = 'Iron Mines'></a> <button type="button" onclick="DecreaseCreator('Iron Mines')">-</button> <button type="button" onclick="IncreaseCreator('Iron Mines')">+</button>
+    </div>
+
+    <div class = "mainBlock">
+        <h1>Factories</h1>
+    </div>
+
+    <div class = "mainBlock">
+      <h1>Character</h1>
+      <div class = 'stats'>
+          Physical : <a id="physical"></a> </br>
+          Mental : <a id="mental"></a> </br>
+          Spiritual/Art : <a id="spiritual"></a> </br>
+          Social/Emotional : <a id="social/emotional"></a> </br>
+          Environmental : <a id="environmental"></a> </br>
+
+      </div>
+    </div>
+</div>
+
+<div class = "mainBlock grid-container smallerGrid">
+    <div class = 'resources' onclick = "assignPlayer('Energy')"> Energy </p> <a id = "Energy"></a> </div>
+    <div class = 'resources' onclick = "assignPlayer('Iron')"> Iron </p> <a id = "Iron"></a> </div>
+    <div class = 'resources' onclick = "assignPlayer('Copper')"> Copper </p> <a id = "Copper"></a> </div>
+    <div class = 'resources' onclick = "assignPlayer('Wood')"> Wood </p>  <a id = "Wood"></a> </div>
+    <div class = 'resources' onclick = "assignPlayer('Iron Plates')"> Iron Plates </p>  <a id = "Iron Plates"></a> </div>
+    <div class = 'resources' onclick = "assignPlayer('Screws')"> Screws</p>  <a id = "Screws"></a> </div>
+    <div class = 'resources' onclick = "assignPlayer('Coils')"> Coil </p>  <a id = "Coils"></a> </div>
+    <div class = 'resources' onclick = "assignPlayer('Wires')"> Wires </p> <a id = "Wires"></a> </div>
+    <div class = 'resources'> Nickel </p> <a></a> </div> <!-- Nickel use : battery ; alloy ; stainless steel ;-->
+    <div class = 'resources'> Iron </p> <a></a> </div>
+    <div class = 'resources'> Iron </p> <a></a> </div>
+    <div class = 'resources'> Iron </p> <a></a> </div>
+    <div class = 'resources'> Iron </p> <a></a> </div>
+</div>
+
+<div class="mainBlock">
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 1)"> Workout <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.1)"> Vitamin <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.2)"> Me <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.1)"> Brush Teeth <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.1)"> Sunscreen <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.1)"> 2 Waters <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 1)"> No sugar <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 0.2)"> Read <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 0.2)"> News podcast <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 1)"> Audiobook <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 1)"> Podcast <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 1)"> Work 5 hours <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('spiritual', 0.5)"> Art <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('spiritual', 1)"> Cook <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('social', 1)"> Social Event or attempt <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('environmental', 0.2)"> Clean <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('environmental', 0.2)"> Clean Kitchen <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('environmental', 0.2)"> Clean Other <br>
+<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('environmental', 0.2)"> Email <br>
+
+
+
+</div>
+
+</body>
+
+    <script src="character.js"></script>
+    <script src="factories.js"></script>
+    <script src="ressources.js"></script>
+</html>
