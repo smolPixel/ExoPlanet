@@ -4,81 +4,108 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="main.css">
     <title>Exo Planet</title>
-
 </head>
 <body>
-<div id = "meta">
-    <button type="button" onclick="SaveGame()">Save</button> <button type="button" onclick="LoadGame()">Load</button>
-</div>
-<div class = "grid-container">
 
-    <div id = "resouces" class = "mainBlock">
-    <h1>Ressources</h1>
-     <div>
-         Iron Mines (C: 5 IP ; 20 S ; 20 II ; 5 W) : <a id = 'Iron Mines'></a> <button type="button" onclick="DecreaseCreator('Iron Mines')">-</button> <button type="button" onclick="IncreaseCreator('Iron Mines')">+</button>
+<div class="scanline"></div>
+<div class="noise"></div>
+
+<header id="hud-header">
+    <div class="hud-title">
+        <span class="title-bracket">[</span>EXO<span class="title-accent">PLANET</span><span class="title-bracket">]</span>
     </div>
-
-    <div class = "mainBlock">
-        <h1>Factories</h1>
+    <div class="hud-meta">
+        <button type="button" id="SaveButton" class="hud-btn">SAVE</button>
+        <button type="button" id="LoadButton" class="hud-btn">LOAD</button>
+        <div class="status-light"></div>
     </div>
+</header>
 
-    <div class = "mainBlock">
-      <h1>Character</h1>
-      <div class = 'stats'>
-          Physical : <a id="physical"></a> </br>
-          Mental : <a id="mental"></a> </br>
-          Spiritual/Art : <a id="spiritual"></a> </br>
-          Social/Emotional : <a id="social/emotional"></a> </br>
-          Environmental : <a id="environmental"></a> </br>
-
-      </div>
+<!-- ROW 1: Factory network — full width -->
+<section class="panel" id="factories-panel">
+    <div class="panel-header">
+        <span class="panel-label">// FACTORY_NETWORK</span>
+        <span class="panel-hint">Scroll to zoom · Space+drag or middle-click to pan · Click output→input port to connect · Click line to delete</span>
     </div>
+    <!-- Inventory bar -->
+    <div id="factory-inventory-bar"></div>
+    <!-- Editor: sidebar + canvas -->
+    <div id="factory-editor">
+        <div id="factory-sidebar"></div>
+        <div id="factory-canvas"><div id="factory-world"></div></div>
+    </div>
+</section>
+
+<!-- ROW 2: Character stats | Event log -->
+<div class="bottom-grid">
+
+    <section class="panel" id="character-panel">
+        <div class="panel-header">
+            <span class="panel-label">// CHARACTER_STATS</span>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-row">
+                <span class="stat-name">PHYSICAL</span>
+                <div class="stat-bar-wrap"><div class="stat-bar"></div></div>
+                <span class="stat-val" id="physical">1.0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">MENTAL</span>
+                <div class="stat-bar-wrap"><div class="stat-bar"></div></div>
+                <span class="stat-val" id="mental">1.0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">SPIRITUAL</span>
+                <div class="stat-bar-wrap"><div class="stat-bar"></div></div>
+                <span class="stat-val" id="spiritual">1.0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">SOCIAL</span>
+                <div class="stat-bar-wrap"><div class="stat-bar"></div></div>
+                <span class="stat-val" id="social_emotional">1.0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">ENVIRON.</span>
+                <div class="stat-bar-wrap"><div class="stat-bar"></div></div>
+                <span class="stat-val" id="environmental">1.0</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel" id="event-log-panel">
+        <div class="panel-header">
+            <span class="panel-label">// COMMS_FEED</span>
+        </div>
+        <div id="event-log-entries"></div>
+    </section>
+
+    <!-- ROW 3: Daily objectives | Checklist -->
+    <section class="panel" id="Goals">
+        <div class="panel-header">
+            <span class="panel-label">// DAILY_OBJECTIVES</span>
+        </div>
+        <div id="Dailies"></div>
+        <div class="add-goal-row">
+            <span class="prompt-cursor">&gt;_</span>
+            <input type="text" id="newdailyTaskName" placeholder="NEW OBJECTIVE..." autocomplete="off"/>
+            <button id="buttonAddDailyTask" class="hud-btn">ADD</button>
+        </div>
+    </section>
+
+    <section class="panel" id="checklist-panel">
+        <div class="panel-header">
+            <span class="panel-label">// TASK_LIST</span>
+        </div>
+        <div id="checklist-items"></div>
+        <div class="add-goal-row">
+            <span class="prompt-cursor">&gt;_</span>
+            <input type="text" id="checklist-add-input" placeholder="NEW TASK..." autocomplete="off"/>
+            <button id="checklist-add-btn" class="hud-btn">ADD</button>
+        </div>
+    </section>
+
 </div>
 
-<div class = "mainBlock grid-container smallerGrid">
-    <div class = 'resources' onclick = "assignPlayer('Energy')"> Energy </p> <a id = "Energy"></a> </div>
-    <div class = 'resources' onclick = "assignPlayer('Iron')"> Iron </p> <a id = "Iron"></a> </div>
-    <div class = 'resources' onclick = "assignPlayer('Copper')"> Copper </p> <a id = "Copper"></a> </div>
-    <div class = 'resources' onclick = "assignPlayer('Wood')"> Wood </p>  <a id = "Wood"></a> </div>
-    <div class = 'resources' onclick = "assignPlayer('Iron Plates')"> Iron Plates </p>  <a id = "Iron Plates"></a> </div>
-    <div class = 'resources' onclick = "assignPlayer('Screws')"> Screws</p>  <a id = "Screws"></a> </div>
-    <div class = 'resources' onclick = "assignPlayer('Coils')"> Coil </p>  <a id = "Coils"></a> </div>
-    <div class = 'resources' onclick = "assignPlayer('Wires')"> Wires </p> <a id = "Wires"></a> </div>
-    <div class = 'resources'> Nickel </p> <a></a> </div> <!-- Nickel use : battery ; alloy ; stainless steel ;-->
-    <div class = 'resources'> Iron </p> <a></a> </div>
-    <div class = 'resources'> Iron </p> <a></a> </div>
-    <div class = 'resources'> Iron </p> <a></a> </div>
-    <div class = 'resources'> Iron </p> <a></a> </div>
-</div>
-
-<div class="mainBlock">
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 1)"> Workout <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.1)"> Vitamin <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.2)"> Me <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.1)"> Brush Teeth <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.1)"> Sunscreen <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 0.1)"> 2 Waters <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('physical', 1)"> No sugar <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 0.2)"> Read <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 0.2)"> News podcast <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 1)"> Audiobook <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 1)"> Podcast <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('mental', 1)"> Work 5 hours <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('spiritual', 0.5)"> Art <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('spiritual', 1)"> Cook <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('social', 1)"> Social Event or attempt <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('environmental', 0.2)"> Clean <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('environmental', 0.2)"> Clean Kitchen <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('environmental', 0.2)"> Clean Other <br>
-<input type="checkbox" value="workout" onchange="if (this.checked) increaseStat('environmental', 0.2)"> Email <br>
-
-
-
-</div>
-
+<script type="module" src="ressources.js"></script>
 </body>
-
-    <script src="character.js"></script>
-    <script src="factories.js"></script>
-    <script src="ressources.js"></script>
 </html>
