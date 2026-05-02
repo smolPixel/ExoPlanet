@@ -1,0 +1,25 @@
+- Organize factory and collapsible function. Also add limit to how manymines you can have
+- Upgradable facilities
+- Limit
+- Exploration mechanic
+- Map out v0 pipeline
+- Kelpy messages
+- Tie stats to other things
+- Task list things
+- Change reset stats to be less harsh / based on existing tasks more, make it exponentially hard to level up stats
+- Limit connection speed,add a button to upgrade connectors
+- Limit number of connection, gets better with upgrades
+- KP-7 should disappear when bought
+- Icons in bar should be much smaller
+- Log system should be in order
+
+Start with no copper
+Wood is a bit useless right now
+
+- Enviro -> Degradation of facilities
+- Physical -> ressource production
+- Mental ->
+- Spiritual ->
+- Social -> KP-7 / Piggies
+
+bind t "kick hunter; kick (1)hunter; kick (2)hunter; kick jockey; kick (1)jockey; kick (2)jockey;  kick smoker; kick (1)smoker; kick (2)smoker; kick (3)smoker; kick charger; kick (1)charger; kick spitter; kick (1)spitter; kick boomer; kick tank"

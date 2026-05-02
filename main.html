@@ -15,11 +15,28 @@
         <span class="title-bracket">[</span>EXO<span class="title-accent">PLANET</span><span class="title-bracket">]</span>
     </div>
     <div class="hud-meta">
+        <button type="button" id="options-btn" class="hud-btn">OPTIONS</button>
         <button type="button" id="SaveButton" class="hud-btn">SAVE</button>
         <button type="button" id="LoadButton" class="hud-btn">LOAD</button>
         <div class="status-light"></div>
     </div>
 </header>
+
+<!-- DEV CONSOLE -->
+<section class="panel" id="dev-console-panel">
+    <div class="panel-header" id="dev-console-toggle" style="cursor:pointer;">
+        <span class="panel-label">// DEV_CONSOLE</span>
+        <span class="panel-hint" id="dev-console-hint">▶ COLLAPSED — click to expand</span>
+    </div>
+    <div id="dev-console-body" style="display:none;">
+        <div id="dev-console-output"></div>
+        <div class="dev-console-input-row">
+            <span class="prompt-cursor">&gt;_</span>
+            <input type="text" id="dev-console-input" placeholder="help" autocomplete="off" spellcheck="false"/>
+            <button class="hud-btn" id="dev-console-run">RUN</button>
+        </div>
+    </div>
+</section>
 
 <!-- ROW 1: Factory network — full width -->
 <section class="panel" id="factories-panel">
@@ -29,6 +46,8 @@
     </div>
     <!-- Inventory bar -->
     <div id="factory-inventory-bar"></div>
+    <!-- Upgrades bar -->
+    <div id="factory-upgrades-bar"></div>
     <!-- Editor: sidebar + canvas -->
     <div id="factory-editor">
         <div id="factory-sidebar"></div>
@@ -44,6 +63,17 @@
             <span class="panel-label">// CHARACTER_STATS</span>
         </div>
         <div class="stats-grid">
+            <div class="stat-row">
+                <span class="stat-name">STAMINA</span>
+                <div class="stat-bar-wrap"><div class="stat-bar vital-stamina" id="bar-stamina" style="width:100%"></div></div>
+                <span class="stat-val" id="val-stamina">100</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-name">MENTAL HP</span>
+                <div class="stat-bar-wrap"><div class="stat-bar vital-mentalhealth" id="bar-mentalhealth" style="width:100%"></div></div>
+                <span class="stat-val" id="val-mentalhealth">100</span>
+            </div>
+            <div class="vital-divider"></div>
             <div class="stat-row">
                 <span class="stat-name">PHYSICAL</span>
                 <div class="stat-bar-wrap"><div class="stat-bar"></div></div>
@@ -70,11 +100,20 @@
                 <span class="stat-val" id="environmental">1.0</span>
             </div>
         </div>
+        <div class="char-action-status" id="char-action-status">ACTION: IDLE</div>
+        <div class="char-actions">
+            <button type="button" id="action-rest" class="hud-btn action-btn">REST</button>
+            <button type="button" id="action-explore" class="hud-btn action-btn">EXPLORE</button>
+        </div>
     </section>
 
     <section class="panel" id="event-log-panel">
         <div class="panel-header">
             <span class="panel-label">// COMMS_FEED</span>
+        </div>
+        <div class="comms-tabs">
+            <button class="comms-tab active" id="tab-system">SYSTEMS<span class="tab-notif hidden" id="notif-system">●</span></button>
+            <button class="comms-tab" id="tab-kelpy">KELPY<span class="tab-notif hidden" id="notif-kelpy">●</span></button>
         </div>
         <div id="event-log-entries"></div>
     </section>
@@ -104,6 +143,84 @@
         </div>
     </section>
 
+</div>
+
+<!-- EXPLORE MAP MODAL -->
+<div id="explore-modal" class="popup-overlay hidden">
+    <div class="popup-box explore-popup">
+        <div class="popup-label">// EXPLORE — SELECT ZONE</div>
+        <div class="explore-map-grid" id="explore-map-grid">
+            <div class="map-tile map-tile-locked"><span class="map-tile-unknown">???</span></div>
+            <div class="map-tile map-tile-locked"><span class="map-tile-unknown">???</span></div>
+            <div class="map-tile map-tile-locked"><span class="map-tile-unknown">???</span></div>
+            <div class="map-tile map-tile-locked"><span class="map-tile-unknown">???</span></div>
+            <div class="map-tile map-tile-available" id="tile-crash-plateau">
+                <span class="map-tile-icon">💥</span>
+                <span class="map-tile-name">CRASH PLATEAU</span>
+                <span class="map-tile-status" id="tile-crash-plateau-status">AVAILABLE</span>
+                <div class="map-tile-progress"><div class="map-tile-progress-bar" id="tile-crash-plateau-bar" style="width:0%"></div></div>
+                <span class="map-tile-pct" id="tile-crash-plateau-pct">-- SURVEYED</span>
+            </div>
+            <div class="map-tile map-tile-locked"><span class="map-tile-unknown">???</span></div>
+            <div class="map-tile map-tile-locked"><span class="map-tile-unknown">???</span></div>
+            <div class="map-tile map-tile-locked"><span class="map-tile-unknown">???</span></div>
+            <div class="map-tile map-tile-locked"><span class="map-tile-unknown">???</span></div>
+        </div>
+        <div class="explore-modal-footer">
+            <button class="hud-btn" id="explore-modal-close">CANCEL</button>
+        </div>
+    </div>
+</div>
+
+<div id="hud-tooltip" class="hud-tooltip hidden"></div>
+
+<!-- ── OPTIONS SCREEN ── -->
+<div id="options-screen" class="options-screen hidden">
+    <header class="options-hdr">
+        <div class="hud-title">
+            <span class="title-bracket">[</span>EXO<span class="title-accent">PLANET</span><span class="title-bracket">]</span>
+            <span class="title-accent"> // OPTIONS</span>
+        </div>
+        <button type="button" id="options-back" class="hud-btn">◀ BACK</button>
+    </header>
+    <div class="options-body">
+
+        <!-- Save data -->
+        <section class="panel opt-section">
+            <div class="panel-header">
+                <span class="panel-label">// SAVE_DATA</span>
+                <span class="panel-hint">base64-encoded save string</span>
+            </div>
+            <div class="opt-content">
+                <div class="opt-btn-row">
+                    <button class="hud-btn" id="opt-export-btn">EXPORT SAVE</button>
+                    <button class="hud-btn" id="opt-import-btn">IMPORT SAVE</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic difficulty -->
+        <section class="panel opt-section">
+            <div class="panel-header">
+                <span class="panel-label">// DYNAMIC_DIFFICULTY</span>
+                <span class="panel-hint">Adapts all daily objective weights on reset</span>
+            </div>
+            <div class="opt-content">
+                <label class="dyn-toggle-row">
+                    <input type="checkbox" id="dyn-toggle" class="checklist-cb"/>
+                    <span class="dyn-toggle-label">ADAPTIVE DIFFICULTY</span>
+                    <span class="dyn-toggle-hint">Achieved → weight−adj · Missed → weight+adj</span>
+                </label>
+                <label class="dyn-adj-row">
+                    <span class="dyn-adj-label">ADJUSTMENT</span>
+                    <input type="number" id="dyn-adj-input" class="dyn-adj-input"
+                           min="0" max="1" step="0.001" value="0.01"/>
+                    <span class="dyn-adj-range">0 – 1</span>
+                </label>
+            </div>
+        </section>
+
+    </div>
 </div>
 
 <script type="module" src="ressources.js"></script>

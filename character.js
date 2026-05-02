@@ -46,47 +46,18 @@ export class character{
  // TODO : 1- iterate over stat, 2- change how you load character
 }
 
-export function increaseStat(stat, value, player){
-    if (stat == 'physical'){
-        player.physical += value ;
-    }
-    else if (stat == 'mental'){
-        player.mental += value ;
-    }
-    else if (stat == 'spiritual'){
-        player.spiritual += value ;
-    }
-    else if (stat == 'social_emotional'){
-        player.social_emotional += value ;
-    }
-    else if (stat == 'environmental'){
-        player.environmental += value ;
-    }
-    else{
-        throw new Error(`${stat} if not defined`)
-    }
+// Log-scale gain: full at stat=1, ~23% at stat=20, never reaches 0.
+// ln(2)/ln(stat+1) — genuine log, no baked-in ceiling.
+export function statGain(currentStat, base) {
+    return base * Math.LN2 / Math.log(Math.max(1, currentStat) + 1);
+}
 
+export function increaseStat(stat, value, player){
+    if (!(stat in player)) throw new Error(`${stat} is not defined`);
+    player[stat] += statGain(player[stat], value);
 }
 
 export function decreaseStat(stat, value, player){
-    console.log(stat, value)
-    if (stat == 'physical'){
-        player.physical -= value ;
-    }
-    else if (stat == 'mental'){
-        player.mental -= value ;
-    }
-    else if (stat == 'spiritual'){
-        player.spiritual -= value ;
-    }
-    else if (stat == 'social_emotional'){
-        player.social_emotional -= value ;
-    }
-    else if (stat == 'environmental'){
-        player.environmental -= value ;
-    }
-    else{
-        throw new Error(`${stat} if not defined`)
-    }
-
+    if (!(stat in player)) throw new Error(`${stat} is not defined`);
+    player[stat] -= statGain(player[stat], value);
 }

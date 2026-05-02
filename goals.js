@@ -1,4 +1,6 @@
-import { increaseStat, decreaseStat } from './character.js'
+import { statGain } from './character.js';
+import { dynSettings } from './options.js';
+import { onTaskComplete } from './upgrades.js';
 
 export class daily {
     constructor(name, associated_stat, associated_value) {
@@ -7,6 +9,7 @@ export class daily {
         this.associated_value = associated_value;
         this.checked = false;
         this.streak = 0;
+        this._appliedGain = null;
     }
 
     load_goal(goal) {
@@ -57,7 +60,7 @@ export function reset_goals_daily(dico_goals, player) {
     for (let i = 0; i < num_char; i++) {
         let charname = Object.keys(dico_char)[i];
         let charvalue = dico_char[charname];
-        let new_value = Math.max(1, charvalue - 0.5);
+        let new_value = Math.max(1, charvalue - statGain(charvalue, 0.5) * 1.5);
         player.set_char(charname, new_value);
     }
 
@@ -66,12 +69,14 @@ export function reset_goals_daily(dico_goals, player) {
         let checkbox = document.getElementById(safeId);
         if (!checkbox) return;
 
+        const wasChecked = checkbox.checked;
         const safeStreakId = get_safe_Id(x.name, "streak");
         const streakSpan = document.getElementById(safeStreakId);
-        if (checkbox.checked == false) {
+
+        if (!wasChecked) {
             let dico_char = player.iterate_values();
             let charvalue = dico_char[x.associated_stat];
-            let new_value = charvalue - x.associated_value;
+            let new_value = charvalue - statGain(charvalue, x.associated_value) * 1.5;
             player.set_char(x.associated_stat, new_value);
             x.streak = 0;
             if (streakSpan) streakSpan.textContent = `— 0`;
@@ -80,8 +85,14 @@ export function reset_goals_daily(dico_goals, player) {
             if (streakSpan) streakSpan.textContent = `🔥 ${x.streak}`;
         }
 
+        if (dynSettings.enabled) {
+            if (wasChecked) x.diminish_value(dynSettings.adjustment);
+            else            x.increase_value(dynSettings.adjustment);
+        }
+
         checkbox.checked = false;
         x.checked = false;
+        x._appliedGain = null;
     });
 }
 
@@ -131,19 +142,74 @@ function add_goals(dico_goals, x, player) {
     checkbox.setAttribute("id", safeId);
     checkbox.addEventListener('change', () => {
         if (checkbox.checked) {
-            increaseStat(x.associated_stat, x.associated_value, player);
+            const gain = statGain(player[x.associated_stat], x.associated_value);
+            x._appliedGain = gain;
+            player[x.associated_stat] += gain;
             x.checked = true;
+            onTaskComplete();
         } else {
-            decreaseStat(x.associated_stat, x.associated_value, player);
+            const reversal = x._appliedGain ?? statGain(player[x.associated_stat], x.associated_value);
+            player[x.associated_stat] = Math.max(1, player[x.associated_stat] - reversal);
+            x._appliedGain = null;
             x.checked = false;
         }
     });
     if (x.checked) checkbox.checked = true;
 
-    // Label
+    // Label (double-click to rename)
     const label = document.createElement('label');
     label.setAttribute('for', safeId);
     label.textContent = x.name;
+    label.addEventListener('dblclick', () => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = x.name;
+        input.className = 'goal-rename-input';
+        label.replaceWith(input);
+        input.focus();
+        input.select();
+
+        function commitRename() {
+            const newName = input.value.trim();
+            if (newName && newName !== x.name) {
+                const oldSafeId        = get_safe_Id(x.name, "goals");
+                const oldSafeRowId     = get_safe_Id(x.name, "row");
+                const oldSafeAttrId    = get_safe_Id(x.name, "attribute");
+                const oldSafeValueId   = get_safe_Id(x.name, "value");
+                const oldSafeStreakId  = get_safe_Id(x.name, "streak");
+
+                x.name = newName;
+
+                const newSafeId        = get_safe_Id(x.name, "goals");
+                const newSafeRowId     = get_safe_Id(x.name, "row");
+                const newSafeAttrId    = get_safe_Id(x.name, "attribute");
+                const newSafeValueId   = get_safe_Id(x.name, "value");
+                const newSafeStreakId  = get_safe_Id(x.name, "streak");
+
+                const cbEl     = document.getElementById(oldSafeId);
+                const rowEl    = document.getElementById(oldSafeRowId);
+                const attrEl   = document.getElementById(oldSafeAttrId);
+                const valueEl  = document.getElementById(oldSafeValueId);
+                const streakEl = document.getElementById(oldSafeStreakId);
+
+                if (cbEl)     { cbEl.id = newSafeId; cbEl.value = newName; }
+                if (rowEl)    { rowEl.id = newSafeRowId; }
+                if (attrEl)   { attrEl.id = newSafeAttrId; }
+                if (valueEl)  { valueEl.id = newSafeValueId; }
+                if (streakEl) { streakEl.id = newSafeStreakId; }
+
+                label.setAttribute('for', newSafeId);
+            }
+            label.textContent = x.name;
+            input.replaceWith(label);
+        }
+
+        input.addEventListener('blur', commitRename);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { input.blur(); }
+            if (e.key === 'Escape') { input.value = x.name; input.blur(); }
+        });
+    });
 
     // Stat span (click to cycle)
     const statSpan = document.createElement("span");
@@ -206,7 +272,9 @@ function add_goals(dico_goals, x, player) {
     row.appendChild(streakSpan);
     row.appendChild(deleteBtn);
 
-    main.appendChild(row);
+    const btnRow = main.querySelector('.goal-btn-row');
+    if (btnRow) main.insertBefore(row, btnRow);
+    else        main.appendChild(row);
 }
 
 export function set_goals(dico_goals, player) {
@@ -226,6 +294,7 @@ export function set_goals(dico_goals, player) {
     resetBtn.onclick = function () { reset_goals(dico_goals); };
 
     const dayResetBtn = document.createElement('button');
+    dayResetBtn.id = 'daily-reset-btn';
     dayResetBtn.className = 'goal-action-btn';
     dayResetBtn.innerHTML = 'DAILY RESET';
     dayResetBtn.onclick = function () { reset_goals_daily(dico_goals, player); };
@@ -235,14 +304,16 @@ export function set_goals(dico_goals, player) {
     main.appendChild(btnRow);
 
     // FIX: pass actual daily object to add_goals, not just the string
-    const addBtn = document.getElementById('buttonAddDailyTask');
-    if (addBtn) {
-        addBtn.onclick = function () {
-            const nameInput = document.getElementById('newdailyTaskName');
-            const name = nameInput.value.trim();
-            if (!name) return;
-            add_goals(dico_goals, name, player);
-            nameInput.value = '';
-        };
+    const addBtn   = document.getElementById('buttonAddDailyTask');
+    const nameInput = document.getElementById('newdailyTaskName');
+
+    function _submitNewGoal() {
+        const name = nameInput.value.trim();
+        if (!name) return;
+        add_goals(dico_goals, name, player);
+        nameInput.value = '';
     }
+
+    if (addBtn)    addBtn.onclick = _submitNewGoal;
+    if (nameInput) nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') _submitNewGoal(); });
 }
